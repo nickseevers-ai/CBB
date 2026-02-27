@@ -26,7 +26,7 @@ latest_form_season = assets["latest_form_season"]
 latest_season      = assets["latest_season"]
 CURRENT_SEASON     = assets["current_season"]
 
-API_KEY  = st.secrets.get("upIJ74md21T7tdxEJop2P8O3UP0ydqHQLzm0H1VB0hZSOmeyhJsxA5qO2F6Aft8U", "")
+API_KEY = st.secrets.get("CFBD_API_KEY", "")
 BASE_URL = "https://api.collegebasketballdata.com"
 
 # ─── Helper functions ─────────────────────────────────────────────────────────
