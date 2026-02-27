@@ -45,7 +45,7 @@ def lookup_stats(team, season):
 @st.cache_data(ttl=1800)
 def fetch_schedule(date_str):
     if not API_KEY:
-        st.error("Set CBBD_API_KEY in Streamlit secrets (Settings → Secrets).")
+        st.error("Set CFBD_API_KEY in Streamlit secrets (Settings → Secrets).")
         return pd.DataFrame()
     try:
         r = requests.get(
