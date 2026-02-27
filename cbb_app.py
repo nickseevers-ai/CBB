@@ -247,7 +247,7 @@ tab_picks, tab_backtest = st.tabs(["📅 Today's Picks", "📊 Backtest"])
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — PICKS
 # ══════════════════════════════════════════════════════════════════════════════
-with tab_picks:
+def show_picks_tab():
     c1, c2 = st.columns([4, 1])
     with c1:
         sel_date = st.date_input("Date", value=date.today(),
@@ -264,7 +264,7 @@ with tab_picks:
 
     if schedule.empty or "homeTeam" not in schedule.columns:
         st.info("No games found for this date.")
-        st.stop()
+        return
 
     if "status" in schedule.columns:
         schedule = schedule[schedule["status"].isin(
@@ -272,7 +272,7 @@ with tab_picks:
 
     if schedule.empty:
         st.info("No active games for this date.")
-        st.stop()
+        return
 
     results = predict(schedule)
     results = attach_lines(results, lines_map)
@@ -374,7 +374,7 @@ with tab_picks:
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 2 — BACKTEST
 # ══════════════════════════════════════════════════════════════════════════════
-with tab_backtest:
+def show_backtest_tab():
     st.markdown("### Model Backtest — Current Season")
     st.caption(
         "All 2025-26 games are out-of-sample (model trained through 2024-25). "
@@ -391,7 +391,7 @@ with tab_backtest:
 
     if bt_start >= bt_end:
         st.warning("Start date must be before end date.")
-        st.stop()
+        return
     if (bt_end - bt_start).days > 60:
         st.warning("Range capped at 60 days.")
         bt_end = bt_start + timedelta(days=60)
@@ -402,7 +402,7 @@ with tab_backtest:
 
     if bt_games.empty or "homeTeam" not in bt_games.columns:
         st.info("No completed games in this range.")
-        st.stop()
+        return
 
     # Keep only finals with a declared winner
     bt_games = bt_games[
@@ -411,7 +411,7 @@ with tab_backtest:
 
     if bt_games.empty:
         st.info("No finalized games found.")
-        st.stop()
+        return
 
     with st.spinner(f"Running model on {len(bt_games)} games..."):
         bt_res = predict(bt_games)
@@ -471,7 +471,7 @@ with tab_backtest:
                   f"{len(hc)} games")
 
     if len(hc) and n_ats:
-        hc_ats = bt_res.loc[bt_res["confidence"] >= 0.72 & ats_mask, "ats_correct"]
+        hc_ats = bt_res.loc[(bt_res["confidence"] >= 0.72) & ats_mask, "ats_correct"]
         st.caption(
             f"High confidence (>=72%): {int(hc['correct'].sum())}-"
             f"{len(hc)-int(hc['correct'].sum())} SU ({hc_acc:.1%})"
@@ -542,3 +542,10 @@ with tab_backtest:
         f"{n_games} games · {n_ats} with lines · "
         "Caveat: ratings used are season-to-date, not game-date snapshots"
     )
+
+# ─── Render tabs ──────────────────────────────────────────────────────────────
+with tab_picks:
+    show_picks_tab()
+
+with tab_backtest:
+    show_backtest_tab()
